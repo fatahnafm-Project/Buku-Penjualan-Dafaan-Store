@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldenSales v4.0 - Master Inventory</title>
+    <title>GoldenSales v4.5 - Margin Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,95 +16,105 @@
         .gold-border { border-color: #D4AF37; }
         .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
         .card-shadow { box-shadow: 0 10px 25px -5px rgba(0,31,63,0.1); }
+        .progress-bar { transition: width 1s ease-in-out; }
     </style>
 </head>
 <body class="pb-12">
 
     <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50 shadow-xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="header-font text-2xl text-white tracking-widest">GOLDEN<span class="gold-text">SALES</span> <span class="text-[10px] opacity-50 uppercase tracking-tighter text-white">v4.0 Master Inventory</span></h1>
+            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">Analytics Pro</span></h1>
             <div class="flex items-center gap-3">
                 <select id="periodeAnalisis" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white text-xs border border-blue-700 outline-none">
-                    <option value="hari">Hari Ini</option>
+                    <option value="hari">Data Hari Ini</option>
                     <option value="minggu">7 Hari Terakhir</option>
                     <option value="bulan">30 Hari Terakhir</option>
                 </select>
-                <button onclick="exportPDF()" class="gold-gradient text-navy-bg px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">Laporan PDF</button>
+                <button onclick="exportPDF()" class="gold-gradient text-navy-bg px-5 py-2 rounded-full font-bold text-xs uppercase shadow-lg hover:scale-105 transition">Export PDF</button>
             </div>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
         
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="bg-white rounded-2xl card-shadow border-t-4 gold-border p-6 h-fit">
-                <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest mb-4 flex items-center">
-                    <span class="gold-text mr-2">📦</span> Update Stok Gudang
-                </h2>
-                <div class="space-y-3">
-                    <select id="stokKategori" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none font-bold">
-                        <option value="Tas">Kategori: Tas</option>
-                        <option value="Dompet">Kategori: Dompet</option>
-                        <option value="Paket">Kategori: Paket</option>
-                        <option value="Lainnya">Kategori: Lainnya</option>
-                    </select>
-                    <input type="number" id="stokTambah" placeholder="Jumlah Tambah Stok" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
-                    <button onclick="updateStokGudang()" class="w-full py-3 bg-navy-bg text-white font-bold rounded-xl text-xs uppercase tracking-widest hover:bg-black transition">Tambah ke Gudang</button>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="inventoryDisplay"></div>
+
+        <div class="bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+            <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest mb-6">Analisis Margin & Efisiensi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-bold uppercase">
+                        <span class="text-gray-400">HPP Rate</span>
+                        <span id="hppRateTxt" class="text-amber-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div id="hppBar" class="progress-bar bg-amber-500 h-full" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 italic">Porsi modal dari omzet</p>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-bold uppercase">
+                        <span class="text-gray-400">Ops Rate</span>
+                        <span id="opsRateTxt" class="text-indigo-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div id="opsBar" class="progress-bar bg-indigo-500 h-full" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 italic">Biaya operasional & admin</p>
+                </div>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-xs font-bold uppercase">
+                        <span class="text-gray-400">Net Profit Margin</span>
+                        <span id="profitRateTxt" class="text-emerald-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                        <div id="profitBar" class="progress-bar bg-emerald-500 h-full" style="width: 0%"></div>
+                    </div>
+                    <p class="text-[10px] text-gray-400 italic">Keuntungan bersih riil</p>
                 </div>
             </div>
-
-            <div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4" id="inventoryDisplay">
-                </div>
-        </section>
-
-        <hr class="border-gray-300">
+        </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-2xl card-shadow overflow-hidden border border-gray-100 h-fit">
-                <div class="navy-bg p-4 flex justify-between">
-                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Input Penjualan</h2>
+            <div class="bg-white rounded-2xl card-shadow overflow-hidden h-fit border border-gray-100">
+                <div class="navy-bg p-4 flex justify-between items-center">
+                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Transaksi & Stok</h2>
+                    <button onclick="document.getElementById('modalStok').classList.toggle('hidden')" class="text-[10px] gold-text font-bold underline">ISI GUDANG</button>
                 </div>
                 <div class="p-6 space-y-4">
                     <input type="date" id="inpTgl" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
-                    <select id="inpKategori" class="w-full p-3 bg-amber-50 border-amber-200 border rounded-xl text-sm outline-none font-bold">
+                    <select id="inpKategori" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm font-bold">
                         <option value="Tas">Tas</option>
                         <option value="Dompet">Dompet</option>
                         <option value="Paket">Paket</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
-                    <input type="text" id="inpNama" placeholder="Nama Produk / Customer" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                    <input type="text" id="inpNama" placeholder="Nama Produk" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     <div class="grid grid-cols-2 gap-4">
                         <input type="number" id="inpHpp" placeholder="HPP Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                         <input type="number" id="inpJual" placeholder="Harga Jual" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     </div>
-                    <div class="grid grid-cols-1 gap-4">
-                        <input type="number" id="inpTerjual" placeholder="Jumlah Terjual" class="w-full p-3 border-blue-200 border rounded-xl text-sm outline-none font-bold text-blue-700">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="inpTerjual" placeholder="Qty Terjual" class="w-full p-3 border-blue-200 border rounded-xl text-sm font-bold text-blue-700">
+                        <input type="number" id="inpOps" placeholder="Biaya Admin" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     </div>
-                    <input type="number" id="inpOps" placeholder="Biaya Admin/Ops per Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
-                    <button onclick="tambahDataPenjualan()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-xl hover:scale-[1.02] transition uppercase text-xs tracking-widest">Simpan & Potong Stok</button>
+                    <button onclick="tambahDataPenjualan()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-xl hover:brightness-110 uppercase text-xs">Simpan Transaksi</button>
                 </div>
             </div>
 
-            <div class="lg:col-span-2 space-y-6">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white p-4 rounded-xl card-shadow border-l-4 border-emerald-500">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase">Total Profit Bersih</p>
-                        <h3 id="statProfit" class="text-xl font-black text-emerald-600">Rp 0</h3>
-                    </div>
-                    <div class="bg-white p-4 rounded-xl card-shadow border-l-4 border-amber-500">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase">Item Terjual</p>
-                        <h3 id="statTerjual" class="text-xl font-black text-amber-700">0</h3>
-                    </div>
+            <div class="lg:col-span-2 bg-white rounded-2xl card-shadow overflow-hidden border border-gray-100">
+                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
+                    <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest">Laporan Keuangan</h2>
+                    <div id="statOmzet" class="text-sm font-bold text-navy-bg">Omzet: Rp 0</div>
                 </div>
-
-                <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 border-b">
-                            <tr class="text-[10px] text-gray-400 uppercase font-black">
-                                <th class="p-4">Tanggal</th>
-                                <th class="p-4">Kategori</th>
+                        <thead class="bg-gray-50 text-[10px] text-gray-400 uppercase">
+                            <tr>
                                 <th class="p-4">Produk</th>
-                                <th class="p-4 text-right">Profit Bersih</th>
+                                <th class="p-4">Omzet</th>
+                                <th class="p-4">Margin %</th>
+                                <th class="p-4 text-right">Profit Net</th>
                                 <th class="p-4"></th>
                             </tr>
                         </thead>
@@ -115,55 +125,45 @@
         </div>
     </main>
 
+    <div id="modalStok" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
+            <h3 class="font-bold text-navy-bg uppercase text-center border-b pb-2">Input Stok Gudang</h3>
+            <select id="stokKategori" class="w-full p-3 bg-gray-50 border rounded-xl">
+                <option value="Tas">Tas</option>
+                <option value="Dompet">Dompet</option>
+                <option value="Paket">Paket</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+            <input type="number" id="stokTambah" placeholder="Jumlah Tambah" class="w-full p-3 border rounded-xl">
+            <div class="flex gap-2">
+                <button onclick="document.getElementById('modalStok').classList.add('hidden')" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold text-xs uppercase">Batal</button>
+                <button onclick="updateStokGudang()" class="flex-1 py-3 bg-navy-bg text-white rounded-xl font-bold text-xs uppercase">Simpan</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Data Stok Gudang Default
-        let masterStock = JSON.parse(localStorage.getItem('goldenMasterStock')) || {
-            "Tas": 0, "Dompet": 0, "Paket": 0, "Lainnya": 0
-        };
-
+        let masterStock = JSON.parse(localStorage.getItem('goldenMasterStock')) || { "Tas": 0, "Dompet": 0, "Paket": 0, "Lainnya": 0 };
         let salesDB = JSON.parse(localStorage.getItem('goldenSalesDB_v4')) || [];
-
         document.getElementById('inpTgl').valueAsDate = new Date();
 
         function formatRp(n) { return "Rp " + new Intl.NumberFormat("id-ID").format(n); }
 
-        // FUNGSI INVENTORY
         function updateStokGudang() {
             const kat = document.getElementById('stokKategori').value;
             const jml = parseInt(document.getElementById('stokTambah').value) || 0;
-            
-            if(jml <= 0) return alert("Masukkan jumlah stok!");
-            
+            if(jml <= 0) return alert("Jumlah salah!");
             masterStock[kat] += jml;
             localStorage.setItem('goldenMasterStock', JSON.stringify(masterStock));
             document.getElementById('stokTambah').value = "";
+            document.getElementById('modalStok').classList.add('hidden');
             renderApp();
         }
 
-        function renderInventory() {
-            const container = document.getElementById('inventoryDisplay');
-            container.innerHTML = "";
-            for (const [kat, jml] of Object.entries(masterStock)) {
-                const isLow = jml < 5 ? 'text-red-600' : 'text-navy-bg';
-                container.innerHTML += `
-                    <div class="bg-white p-4 rounded-xl card-shadow border border-gray-100 flex flex-col items-center justify-center">
-                        <p class="text-[10px] font-bold text-gray-400 uppercase mb-1">${kat}</p>
-                        <h3 class="text-2xl font-black ${isLow}">${jml}</h3>
-                        <p class="text-[8px] text-gray-400 uppercase">Sisa Unit</p>
-                    </div>
-                `;
-            }
-        }
-
-        // FUNGSI PENJUALAN
         function tambahDataPenjualan() {
             const kat = document.getElementById('inpKategori').value;
             const terjual = parseInt(document.getElementById('inpTerjual').value) || 0;
-
-            // CEK STOK
-            if (masterStock[kat] < terjual) {
-                return alert(`Stok ${kat} tidak cukup! Sisa stok saat ini: ${masterStock[kat]}`);
-            }
+            if (masterStock[kat] < terjual) return alert(`Stok ${kat} kurang!`);
 
             const data = {
                 id: Date.now(),
@@ -176,69 +176,82 @@
                 ops: parseFloat(document.getElementById('inpOps').value) || 0
             };
 
-            if(!data.nama || terjual <= 0) return alert("Lengkapi data penjualan!");
-
-            // POTONG STOK
+            if(!data.nama || terjual <= 0) return alert("Lengkapi data!");
             masterStock[kat] -= terjual;
             salesDB.push(data);
-
-            // SAVE
             localStorage.setItem('goldenMasterStock', JSON.stringify(masterStock));
             localStorage.setItem('goldenSalesDB_v4', JSON.stringify(salesDB));
-            
             renderApp();
-            clearForm();
-        }
-
-        function clearForm() {
-            ['inpNama', 'inpHpp', 'inpJual', 'inpTerjual', 'inpOps'].forEach(id => document.getElementById(id).value = "");
-        }
-
-        function filterData() {
-            const periode = document.getElementById('periodeAnalisis').value;
-            const now = new Date();
-            return salesDB.filter(item => {
-                const tglItem = new Date(item.tgl);
-                const diffDays = Math.ceil(Math.abs(now - tglItem) / (1000 * 60 * 60 * 24));
-                if(periode === 'hari') return item.tgl === now.toISOString().split('T')[0];
-                if(periode === 'minggu') return diffDays <= 7;
-                if(periode === 'bulan') return diffDays <= 30;
-                return true;
-            });
+            ['inpNama','inpHpp','inpJual','inpTerjual','inpOps'].forEach(i => document.getElementById(i).value="");
         }
 
         function renderApp() {
-            renderInventory();
-            const filtered = filterData();
+            // Inventory Cards
+            const invCont = document.getElementById('inventoryDisplay');
+            invCont.innerHTML = "";
+            for (const [kat, jml] of Object.entries(masterStock)) {
+                invCont.innerHTML += `
+                    <div class="bg-white p-5 rounded-2xl card-shadow border border-gray-100 text-center">
+                        <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">${kat}</p>
+                        <h3 class="text-2xl font-black ${jml < 5 ? 'text-red-500' : 'text-navy-bg'}">${jml}</h3>
+                        <div class="text-[8px] bg-gray-100 py-1 rounded-full mt-2 uppercase">Gudang</div>
+                    </div>`;
+            }
+
+            // Filter & Table
+            const periode = document.getElementById('periodeAnalisis').value;
+            const now = new Date();
+            const filtered = salesDB.filter(item => {
+                const tglItem = new Date(item.tgl);
+                const diff = Math.ceil(Math.abs(now - tglItem) / (1000*60*60*24));
+                if(periode === 'hari') return item.tgl === now.toISOString().split('T')[0];
+                if(periode === 'minggu') return diff <= 7;
+                return diff <= 30;
+            });
+
             const body = document.getElementById('tabelBody');
             body.innerHTML = "";
             
-            let profitTotal = 0, unitTotal = 0;
+            let totalOmzet = 0, totalHpp = 0, totalOps = 0, totalProfit = 0;
 
             filtered.sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).forEach(item => {
-                const itemProfit = ((item.jual - item.hpp) - item.ops) * item.terjual;
-                profitTotal += itemProfit;
-                unitTotal += item.terjual;
+                const omzet = item.jual * item.terjual;
+                const hpp = item.hpp * item.terjual;
+                const ops = item.ops * item.terjual;
+                const profit = omzet - hpp - ops;
+                const marginPercent = (profit / omzet) * 100 || 0;
+
+                totalOmzet += omzet; totalHpp += hpp; totalOps += ops; totalProfit += profit;
 
                 body.innerHTML += `
-                    <tr class="border-b hover:bg-slate-50">
-                        <td class="p-4 text-[10px] text-gray-400">${item.tgl}</td>
-                        <td class="p-4"><span class="bg-blue-100 text-blue-700 text-[10px] px-2 py-1 rounded font-bold">${item.kategori}</span></td>
-                        <td class="p-4 font-bold text-navy-bg">${item.nama}</td>
-                        <td class="p-4 text-right font-bold text-emerald-600">${formatRp(itemProfit)}</td>
-                        <td class="p-4 text-center"><button onclick="hapusPenjualan(${item.id})" class="text-red-300 hover:text-red-600">✕</button></td>
-                    </tr>
-                `;
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-4"><div class="font-bold text-navy-bg">${item.nama}</div><div class="text-[9px] text-gray-400">${item.tgl} | ${item.kategori}</div></td>
+                        <td class="p-4 font-semibold">${formatRp(omzet)}</td>
+                        <td class="p-4"><span class="px-2 py-1 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px]">${marginPercent.toFixed(1)}%</span></td>
+                        <td class="p-4 text-right font-bold text-emerald-600">${formatRp(profit)}</td>
+                        <td class="p-4 text-center"><button onclick="hapus(${item.id})" class="text-red-300">✕</button></td>
+                    </tr>`;
             });
 
-            document.getElementById('statProfit').innerText = formatRp(profitTotal);
-            document.getElementById('statTerjual').innerText = unitTotal + " Unit";
+            // Update Analytics
+            document.getElementById('statOmzet').innerText = "Total Omzet: " + formatRp(totalOmzet);
+            
+            const hppRate = (totalHpp / totalOmzet) * 100 || 0;
+            const opsRate = (totalOps / totalOmzet) * 100 || 0;
+            const profitRate = (totalProfit / totalOmzet) * 100 || 0;
+
+            document.getElementById('hppRateTxt').innerText = hppRate.toFixed(1) + "%";
+            document.getElementById('opsRateTxt').innerText = opsRate.toFixed(1) + "%";
+            document.getElementById('profitRateTxt').innerText = profitRate.toFixed(1) + "%";
+            
+            document.getElementById('hppBar').style.width = hppRate + "%";
+            document.getElementById('opsBar').style.width = opsRate + "%";
+            document.getElementById('profitBar').style.width = profitRate + "%";
         }
 
-        function hapusPenjualan(id) {
+        function hapus(id) {
             const item = salesDB.find(d => d.id === id);
             if(item) {
-                // KEMBALIKAN STOK SAAT TRANSAKSI DIHAPUS
                 masterStock[item.kategori] += item.terjual;
                 salesDB = salesDB.filter(d => d.id !== id);
                 localStorage.setItem('goldenMasterStock', JSON.stringify(masterStock));
@@ -250,26 +263,25 @@
         async function exportPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const filtered = filterData();
-            
             doc.setFillColor(0, 31, 63);
             doc.rect(0, 0, 210, 40, 'F');
             doc.setTextColor(212, 175, 55);
-            doc.setFontSize(22);
-            doc.text("LAPORAN PENJUALAN & STOK", 15, 25);
+            doc.setFontSize(20);
+            doc.text("LAPORAN KEUANGAN & MARGIN", 15, 25);
             
-            const tableData = filtered.map(i => [
-                i.tgl, i.kategori, i.nama, i.terjual, formatRp(((i.jual - i.hpp) - i.ops) * i.terjual)
+            const tableData = salesDB.map(i => [
+                i.tgl, i.nama, i.kategori, i.terjual, formatRp(i.jual * i.terjual), 
+                (( ( (i.jual-i.hpp)-i.ops ) / (i.jual*i.terjual) ) * 100 || 0).toFixed(1) + "%", 
+                formatRp(((i.jual - i.hpp) - i.ops) * i.terjual)
             ]);
 
             doc.autoTable({
-                head: [['Tanggal', 'Kategori', 'Produk', 'Terjual', 'Profit Net']],
+                head: [['Tgl', 'Produk', 'Kat', 'Qty', 'Omzet', 'Margin%', 'Profit']],
                 body: tableData,
                 startY: 50,
                 headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] }
             });
-
-            doc.save(`GoldenSales_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+            doc.save(`GoldenSales_Analytics_${new Date().toISOString().slice(0,10)}.pdf`);
         }
 
         window.onload = renderApp;
