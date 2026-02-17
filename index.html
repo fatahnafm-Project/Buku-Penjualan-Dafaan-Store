@@ -273,15 +273,120 @@
                 renderApp();
             }
         }
-
+        
         async function exportPDF() {
-            const { jsPDF } = window.jspdf; const doc = new jsPDF();
-            doc.setFillColor(0, 31, 63); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(212, 175, 55); doc.setFontSize(20); doc.text("GOLDENSALES ANALYTICS v5.5", 15, 25);
-            const tableData = salesDB.map(i => [i.tgl, i.nama, i.kategori, i.terjual, formatRp(i.jual * i.terjual), formatRp((i.jual-i.hpp-i.ops)*i.terjual)]);
-            doc.autoTable({ head: [['Tgl', 'Produk', 'Kategori', 'Qty', 'Omzet', 'Profit']], body: tableData, startY: 50, headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] } });
-            doc.save(`GoldenSales_Report.pdf`);
-        }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const filtered = salesDB; // Mengambil semua data atau bisa diganti dengan data terfilter
+        
+            // --- HEADER DESIGN ---
+            doc.setFillColor(0, 31, 63); // Navy
+            doc.rect(0, 0, 210, 50, 'F');
+            
+            doc.setTextColor(212, 175, 55); // Gold
+            doc.setFontSize(24);
+            doc.setFont("helvetica", "bold");
+            doc.text("GOLDENSALES", 15, 25);
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text("LAPORAN PERFORMA BISNIS PROFESIONAL", 15, 32);
+            doc.text(`Tanggal Cetak: ${new Date().toLocaleString('id-ID')}`, 15, 38);
+        
+            // --- SUMMARY BOXES ---
+            let totalO = 0, totalP = 0, totalOp = 0, totalQty = 0;
+            let catQty = { "Tas": 0, "Dompet": 0, "Paket": 0, "Lainnya": 0 };
+        
+            filtered.forEach(item => {
+                const o = item.jual * item.terjual;
+                const op = item.ops * item.terjual;
+                const p = o - (item.hpp * item.terjual) - op;
+                totalO += o; totalP += p; totalOp += op; totalQty += item.terjual;
+                if(catQty[item.kategori] !== undefined) catQty[item.kategori] += item.terjual;
+            });
+        
+            // Drawing Summary Cards
+            const drawCard = (x, y, label, value, color) => {
+                doc.setFillColor(245, 245, 245);
+                doc.roundedRect(x, y, 60, 20, 3, 3, 'F');
+                doc.setTextColor(100, 100, 100);
+                doc.setFontSize(8);
+                doc.text(label, x + 5, y + 7);
+                doc.setTextColor(color[0], color[1], color[2]);
+                doc.setFontSize(11);
+                doc.setFont("helvetica", "bold");
+                doc.text(value, x + 5, y + 15);
+            };
+        
+            drawCard(15, 55, "TOTAL OMZET", formatRp(totalO), [0, 31, 63]);
+            drawCard(80, 55, "BIAYA OPERASIONAL", formatRp(totalOp), [99, 102, 241]);
+            drawCard(145, 55, "PROFIT BERSIH", formatRp(totalP), [16, 185, 129]);
+        
+            // --- MAIN TABLE ---
+            doc.setTextColor(0, 31, 63);
+            doc.setFontSize(12);
+            doc.text("RINCIAN TRANSAKSI", 15, 85);
+        
+            const tableData = filtered.map(i => [
+                i.tgl, 
+                i.nama, 
+                i.kategori, 
+                i.terjual, 
+                formatRp(i.jual * i.terjual), 
+                formatRp(i.ops * i.terjual),
+                formatRp((i.jual - i.hpp - i.ops) * i.terjual)
+            ]);
+        
+            doc.autoTable({
+                head: [['Tanggal', 'Produk', 'Kategori', 'Qty', 'Omzet', 'Ops', 'Profit']],
+                body: tableData,
+                startY: 90,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55], fontSize: 9 },
+                columnStyles: { 6: { halign: 'right', fontStyle: 'bold' } },
+                styles: { fontSize: 8 }
+            });
+        
+            // --- CATEGORY SUMMARY TABLE ---
+            let finalY = doc.lastAutoTable.finalY + 15;
+            
+            // Cek jika space tidak cukup, buat halaman baru
+            if (finalY > 230) { doc.addPage(); finalY = 20; }
+        
+            doc.setTextColor(0, 31, 63);
+            doc.setFontSize(12);
+            doc.text("REKAPITULASI STOK TERJUAL", 15, finalY);
+        
+            const categoryData = [
+                ['Tas', catQty["Tas"] + " Unit"],
+                ['Dompet', catQty["Dompet"] + " Unit"],
+                ['Paket', catQty["Paket"] + " Unit"],
+                ['Lainnya', catQty["Lainnya"] + " Unit"],
+                [{content: 'TOTAL KESELURUHAN', styles: {fillColor: [0, 31, 63], textColor: [255,255,255], fontStyle: 'bold'}}, 
+                 {content: totalQty + " Unit", styles: {fillColor: [0, 31, 63], textColor: [255,255,255], fontStyle: 'bold'}}]
+            ];
+        
+            doc.autoTable({
+                body: categoryData,
+                startY: finalY + 5,
+                theme: 'plain',
+                styles: { fontSize: 10, cellPadding: 3 },
+                columnStyles: { 1: { halign: 'right' } },
+                tableWidth: 100, // Membuat tabel kategori lebih compact
+            });
+        
+            // --- FOOTER ---
+            const pageCount = doc.internal.getNumberOfPages();
+            for(let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setFontSize(8);
+                doc.setTextColor(150);
+                doc.text(`Halaman ${i} dari ${pageCount} - GoldenSales v5.5 Enterprise System`, 105, 285, {align: 'center'});
+            }
+    
+            doc.save(`Laporan_GoldenSales_${new Date().toISOString().slice(0,10)}.pdf`);
+        }    
         window.onload = renderApp;
     </script>
 </body>
