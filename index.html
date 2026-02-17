@@ -3,221 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldenSales - Pro Inventory & Profit Manager</title>
+    <title>GoldenSales Enterprise - Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F9E27D 50%, #B8860B 100%); }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         .navy-bg { background-color: #001F3F; }
         .gold-text { color: #D4AF37; }
         .gold-border { border-color: #D4AF37; }
-        .header-font { font-family: 'Playfair Display', serif; }
-        .card-shadow { box-shadow: 0 4px 20px rgba(0, 31, 63, 0.08); }
-        @media print { .no-print { display: none; } }
+        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%); }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0,31,63,0.1); }
     </style>
 </head>
-<body>
+<body class="pb-12">
 
-    <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="header-font text-2xl text-white tracking-widest">GOLDEN<span class="gold-text">SALES</span></h1>
-            <div class="flex items-center gap-4 no-print">
-                <input type="date" id="filterTanggal" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white border border-blue-700 text-sm">
-                <button onclick="exportData()" class="gold-gradient text-navy-bg px-4 py-2 rounded font-bold text-xs uppercase tracking-tighter">Export CSV</button>
+    <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="header-font text-2xl text-white tracking-widest">GOLDEN<span class="gold-text">SALES</span> <span class="text-[10px] opacity-50 uppercase tracking-tighter">Enterprise</span></h1>
+            <div class="flex items-center gap-3">
+                <select id="periodeAnalisis" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white text-xs border border-blue-700 outline-none">
+                    <option value="hari">Hari Ini</option>
+                    <option value="minggu">7 Hari Terakhir</option>
+                    <option value="bulan">30 Hari Terakhir</option>
+                    <option value="semester">6 Bulan Terakhir</option>
+                    <option value="tahun">1 Tahun Terakhir</option>
+                </select>
+                <button onclick="exportPDF()" class="gold-gradient text-navy-bg px-4 py-2 rounded font-bold text-xs uppercase shadow-lg">Download PDF</button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
+    <main class="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
         
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 gold-border">
-                <p class="text-xs font-bold text-gray-400 uppercase">Penjualan Hari Ini</p>
-                <h3 id="statPenjualan" class="text-2xl font-black text-navy-bg">Rp 0</h3>
+            <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 gold-border">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Omzet</p>
+                <h3 id="statOmzet" class="text-2xl font-black text-navy-bg">Rp 0</h3>
             </div>
-            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-emerald-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Laba Kotor (Gross)</p>
-                <h3 id="statLabaKotor" class="text-2xl font-black text-emerald-600">Rp 0</h3>
+            <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-emerald-500">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Profit Bersih</p>
+                <h3 id="statProfit" class="text-2xl font-black text-emerald-600">Rp 0</h3>
             </div>
-            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-blue-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Laba Bersih (Net)</p>
-                <h3 id="statLabaBersih" class="text-2xl font-black text-blue-700">Rp 0</h3>
+            <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-amber-500">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Barang Terjual</p>
+                <h3 id="statTerjual" class="text-2xl font-black text-amber-700">0</h3>
             </div>
-            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-amber-500">
-                <p class="text-xs font-bold text-gray-400 uppercase">Stok Terjual</p>
-                <h3 id="statStokTerjual" class="text-2xl font-black text-amber-700">0 Unit</h3>
+            <div class="bg-white p-6 rounded-2xl card-shadow border-t-4 border-indigo-500">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Margin Rata-rata</p>
+                <h3 id="statMargin" class="text-2xl font-black text-indigo-700">0%</h3>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 h-fit">
-                <div class="navy-bg p-4"><h2 class="text-white font-bold text-sm uppercase tracking-widest">Input Penjualan Baru</h2></div>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl card-shadow border border-gray-100 h-fit overflow-hidden">
+                <div class="navy-bg p-4"><h2 class="text-white text-xs font-bold uppercase tracking-widest">Input Data Penjualan</h2></div>
                 <div class="p-6 space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Nama Barang</label>
-                        <input type="text" id="inpNama" placeholder="Contoh: Kemeja Flanel" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                    <input type="date" id="inpTgl" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                    <input type="text" id="inpNama" placeholder="Nama Produk" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="inpHpp" placeholder="HPP/Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                        <input type="number" id="inpJual" placeholder="Harga Jual" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Harga Modal (HPP)</label>
-                            <input type="number" id="inpHpp" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Harga Jual</label>
-                            <input type="number" id="inpJual" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                        </div>
+                        <input type="number" id="inpStok" placeholder="Stok Awal" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                        <input type="number" id="inpTerjual" placeholder="Terjual" class="w-full p-3 border-blue-200 border rounded-xl text-sm outline-none font-bold text-blue-700">
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Stok Awal</label>
-                            <input type="number" id="inpStok" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Jumlah Terjual</label>
-                            <input type="number" id="inpTerjual" class="w-full p-3 bg-blue-50 border-blue-200 border rounded-lg outline-none font-bold">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Biaya Operasional Lain (Unit)</label>
-                        <input type="number" id="inpOps" value="0" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
-                    </div>
-                    <button onclick="tambahTransaksi()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-lg hover:scale-[1.02] transition uppercase tracking-widest text-sm">Simpan Transaksi</button>
+                    <input type="number" id="inpOps" placeholder="Biaya Admin/Ops per Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                    <button onclick="tambahData()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-xl hover:brightness-110 transition uppercase text-xs tracking-widest">Simpan Data</button>
                 </div>
             </div>
 
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div class="bg-gray-50 p-4 border-b flex justify-between items-center">
-                    <h2 class="text-navy-bg font-bold text-sm uppercase tracking-widest">Laporan Rekapitulasi</h2>
-                    <span id="labelTanggal" class="text-xs font-bold text-gray-400"></span>
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-2xl card-shadow border border-gray-100">
+                    <h2 class="text-navy-bg text-xs font-bold uppercase tracking-widest mb-4">Tren Keuntungan & Penjualan</h2>
+                    <canvas id="salesChart" height="120"></canvas>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead class="bg-gray-100 text-[10px] text-gray-400 uppercase">
-                            <tr>
-                                <th class="p-4">Produk</th>
-                                <th class="p-4">Stok (Sisa/Awal)</th>
-                                <th class="p-4">Omzet</th>
-                                <th class="p-4">Laba Bersih</th>
-                                <th class="p-4 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tabelBody" class="text-sm">
-                            </tbody>
-                    </table>
+
+                <div class="bg-white rounded-2xl card-shadow border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                        <h2 class="text-navy-bg text-xs font-bold uppercase tracking-widest">Rincian Performa Produk</h2>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-100 text-[10px] text-gray-400 uppercase">
+                                <tr>
+                                    <th class="p-4">Tanggal</th>
+                                    <th class="p-4">Produk</th>
+                                    <th class="p-4">Stok Sisa</th>
+                                    <th class="p-4">Profit Bersih</th>
+                                    <th class="p-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-
     </main>
 
     <script>
-        // Database sederhana menggunakan LocalStorage
-        let database = JSON.parse(localStorage.getItem('goldenSalesDB')) || [];
+        let database = JSON.parse(localStorage.getItem('goldenSalesDB_v3')) || [];
+        let myChart = null;
 
-        // Inisialisasi Tanggal Hari Ini
-        document.getElementById('filterTanggal').valueAsDate = new Date();
+        document.getElementById('inpTgl').valueAsDate = new Date();
 
-        function formatRupiah(angka) {
-            return "Rp " + new Intl.NumberFormat("id-ID").format(angka);
-        }
+        function formatRp(n) { return "Rp " + new Intl.NumberFormat("id-ID").format(n); }
 
-        function tambahTransaksi() {
-            const transaksi = {
+        function tambahData() {
+            const data = {
                 id: Date.now(),
-                tanggal: document.getElementById('filterTanggal').value,
+                tgl: document.getElementById('inpTgl').value,
                 nama: document.getElementById('inpNama').value,
                 hpp: parseFloat(document.getElementById('inpHpp').value) || 0,
                 jual: parseFloat(document.getElementById('inpJual').value) || 0,
-                stokAwal: parseInt(document.getElementById('inpStok').value) || 0,
+                stok: parseInt(document.getElementById('inpStok').value) || 0,
                 terjual: parseInt(document.getElementById('inpTerjual').value) || 0,
                 ops: parseFloat(document.getElementById('inpOps').value) || 0
             };
-
-            if(transaksi.nama === "") return alert("Nama barang harus diisi!");
-
-            database.push(transaksi);
-            localStorage.setItem('goldenSalesDB', JSON.stringify(database));
+            if(!data.nama) return alert("Isi nama produk!");
+            database.push(data);
+            localStorage.setItem('goldenSalesDB_v3', JSON.stringify(database));
             renderApp();
-            clearForm();
         }
 
-        function clearForm() {
-            ['inpNama', 'inpHpp', 'inpJual', 'inpStok', 'inpTerjual', 'inpOps'].forEach(id => document.getElementById(id).value = "");
-        }
-
-        function hapusData(id) {
-            database = database.filter(item => item.id !== id);
-            localStorage.setItem('goldenSalesDB', JSON.stringify(database));
-            renderApp();
+        function filterData() {
+            const periode = document.getElementById('periodeAnalisis').value;
+            const now = new Date();
+            return database.filter(item => {
+                const tglItem = new Date(item.tgl);
+                const diffTime = Math.abs(now - tglItem);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if(periode === 'hari') return item.tgl === now.toISOString().split('T')[0];
+                if(periode === 'minggu') return diffDays <= 7;
+                if(periode === 'bulan') return diffDays <= 30;
+                if(periode === 'semester') return diffDays <= 180;
+                if(periode === 'tahun') return diffDays <= 365;
+                return true;
+            });
         }
 
         function renderApp() {
-            const tglFilter = document.getElementById('filterTanggal').value;
-            document.getElementById('labelTanggal').innerText = "Data Tanggal: " + tglFilter;
-            
-            const filteredData = database.filter(item => item.tanggal === tglFilter);
+            const filtered = filterData();
             const body = document.getElementById('tabelBody');
             body.innerHTML = "";
+            
+            let omzet = 0, profit = 0, unit = 0, totalMargin = 0;
 
-            let totalOmzet = 0;
-            let totalKotor = 0;
-            let totalBersih = 0;
-            let totalStokTerjual = 0;
+            filtered.sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).forEach(item => {
+                const itemOmzet = item.jual * item.terjual;
+                const itemProfit = ((item.jual - item.hpp) - item.ops) * item.terjual;
+                const margin = (itemProfit / itemOmzet) * 100 || 0;
 
-            filteredData.forEach(item => {
-                const sisaStok = item.stokAwal - item.terjual;
-                const omzet = item.jual * item.terjual;
-                const labaKotor = (item.jual - item.hpp) * item.terjual;
-                const labaBersih = labaKotor - (item.ops * item.terjual);
-
-                totalOmzet += omzet;
-                totalKotor += labaKotor;
-                totalBersih += labaBersih;
-                totalStokTerjual += item.terjual;
+                omzet += itemOmzet; profit += itemProfit; unit += itemTerjual = item.terjual;
+                totalMargin += margin;
 
                 body.innerHTML += `
-                    <tr class="border-b hover:bg-gray-50">
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-4 text-xs text-gray-400">${item.tgl}</td>
                         <td class="p-4 font-bold text-navy-bg">${item.nama}</td>
-                        <td class="p-4 text-xs">
-                            <span class="text-blue-600 font-bold">${sisaStok}</span> / ${item.stokAwal}
-                        </td>
-                        <td class="p-4 text-gray-600">${formatRupiah(omzet)}</td>
-                        <td class="p-4 font-bold text-emerald-600">${formatRupiah(labaBersih)}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="hapusData(${item.id})" class="text-red-400 hover:text-red-600">✕</button>
-                        </td>
+                        <td class="p-4"><span class="text-blue-600 font-bold">${item.stok - item.terjual}</span>/${item.stok}</td>
+                        <td class="p-4 font-bold text-emerald-600">${formatRp(itemProfit)}</td>
+                        <td class="p-4 text-center"><button onclick="hapus(${item.id})" class="text-red-300 hover:text-red-600">✕</button></td>
                     </tr>
                 `;
             });
 
-            // Update Stats
-            document.getElementById('statPenjualan').innerText = formatRupiah(totalOmzet);
-            document.getElementById('statLabaKotor').innerText = formatRupiah(totalKotor);
-            document.getElementById('statLabaBersih').innerText = formatRupiah(totalBersih);
-            document.getElementById('statStokTerjual').innerText = totalStokTerjual + " Unit";
+            document.getElementById('statOmzet').innerText = formatRp(omzet);
+            document.getElementById('statProfit').innerText = formatRp(profit);
+            document.getElementById('statTerjual').innerText = unit;
+            document.getElementById('statMargin').innerText = (totalMargin / (filtered.length || 1)).toFixed(1) + "%";
+
+            updateChart(filtered);
         }
 
-        function exportData() {
-            let csv = "Tanggal,Nama Produk,HPP,Harga Jual,Stok Awal,Terjual,Sisa Stok,Omzet,Laba Bersih\n";
-            database.forEach(item => {
-                const sisa = item.stokAwal - item.terjual;
-                const omzet = item.jual * item.terjual;
-                const bersih = ((item.jual - item.hpp) - item.ops) * item.terjual;
-                csv += `${item.tanggal},${item.nama},${item.hpp},${item.jual},${item.stokAwal},${item.terjual},${sisa},${omzet},${bersih}\n`;
+        function updateChart(data) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            const labels = data.map(d => d.tgl).slice(-7);
+            const values = data.map(d => (d.jual - d.hpp - d.ops) * d.terjual).slice(-7);
+
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Profit Bersih',
+                        data: values,
+                        borderColor: '#D4AF37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        async function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const filtered = filterData();
+            
+            doc.setFillColor(0, 31, 63);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(212, 175, 55);
+            doc.setFontSize(22);
+            doc.text("GOLDENSALES REPORT", 15, 25);
+            
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.text("Periode: " + document.getElementById('periodeAnalisis').value.toUpperCase(), 15, 32);
+
+            const tableData = filtered.map(i => [
+                i.tgl, i.nama, i.stok - i.terjual, formatRp(i.jual * i.terjual), formatRp((i.jual - i.hpp - i.ops) * i.terjual)
+            ]);
+
+            doc.autoTable({
+                head: [['Tanggal', 'Produk', 'Sisa Stok', 'Omzet', 'Profit Net']],
+                body: tableData,
+                startY: 50,
+                headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] }
             });
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', `Laporan_GoldenSales_${new Date().toISOString().slice(0,7)}.csv`);
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            doc.save(`Laporan_GoldenSales_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
+        function hapus(id) {
+            database = database.filter(d => d.id !== id);
+            localStorage.setItem('goldenSalesDB_v3', JSON.stringify(database));
+            renderApp();
         }
 
         window.onload = renderApp;
