@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldenSales v4.5 - Margin Analytics</title>
+    <title>GoldenSales v5.0 - Ultimate Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,7 +23,7 @@
 
     <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50 shadow-xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">Analytics Pro</span></h1>
+            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">v5.0 Pro</span></h1>
             <div class="flex items-center gap-3">
                 <select id="periodeAnalisis" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white text-xs border border-blue-700 outline-none">
                     <option value="hari">Data Hari Ini</option>
@@ -39,63 +39,55 @@
         
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="inventoryDisplay"></div>
 
-        <div class="bg-white rounded-2xl card-shadow p-6 border border-gray-100">
-            <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest mb-6">Analisis Margin & Efisiensi</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-bold uppercase">
-                        <span class="text-gray-400">HPP Rate</span>
-                        <span id="hppRateTxt" class="text-amber-600">0%</span>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-2xl card-shadow p-6 border border-gray-100 flex flex-col justify-between">
+                <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest mb-6 border-b pb-2">Margin & Efficiency</h2>
+                <div class="space-y-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">HPP Rate</span><span id="hppRateTxt" class="text-amber-600">0%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="hppBar" class="progress-bar bg-amber-500 h-full" style="width: 0%"></div></div>
                     </div>
-                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                        <div id="hppBar" class="progress-bar bg-amber-500 h-full" style="width: 0%"></div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">Ops Rate</span><span id="opsRateTxt" class="text-indigo-600">0%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="opsBar" class="progress-bar bg-indigo-500 h-full" style="width: 0%"></div></div>
                     </div>
-                    <p class="text-[10px] text-gray-400 italic">Porsi modal dari omzet</p>
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">Net Profit Margin</span><span id="profitRateTxt" class="text-emerald-600">0%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="profitBar" class="progress-bar bg-emerald-500 h-full" style="width: 0%"></div></div>
+                    </div>
                 </div>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-bold uppercase">
-                        <span class="text-gray-400">Ops Rate</span>
-                        <span id="opsRateTxt" class="text-indigo-600">0%</span>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl card-shadow p-6 border border-gray-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest">Financial Performance Trend</h2>
+                    <div class="flex gap-3 text-[8px] font-bold uppercase">
+                        <span class="flex items-center"><span class="w-2 h-2 bg-amber-500 rounded-full mr-1"></span> Omzet</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-1"></span> Profit</span>
                     </div>
-                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                        <div id="opsBar" class="progress-bar bg-indigo-500 h-full" style="width: 0%"></div>
-                    </div>
-                    <p class="text-[10px] text-gray-400 italic">Biaya operasional & admin</p>
                 </div>
-                <div class="space-y-2">
-                    <div class="flex justify-between text-xs font-bold uppercase">
-                        <span class="text-gray-400">Net Profit Margin</span>
-                        <span id="profitRateTxt" class="text-emerald-600">0%</span>
-                    </div>
-                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                        <div id="profitBar" class="progress-bar bg-emerald-500 h-full" style="width: 0%"></div>
-                    </div>
-                    <p class="text-[10px] text-gray-400 italic">Keuntungan bersih riil</p>
-                </div>
+                <div class="h-[200px]"><canvas id="lineChartAnalytics"></canvas></div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="bg-white rounded-2xl card-shadow overflow-hidden h-fit border border-gray-100">
                 <div class="navy-bg p-4 flex justify-between items-center">
-                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Transaksi & Stok</h2>
+                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Transaksi</h2>
                     <button onclick="document.getElementById('modalStok').classList.toggle('hidden')" class="text-[10px] gold-text font-bold underline">ISI GUDANG</button>
                 </div>
                 <div class="p-6 space-y-4">
                     <input type="date" id="inpTgl" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     <select id="inpKategori" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm font-bold">
-                        <option value="Tas">Tas</option>
-                        <option value="Dompet">Dompet</option>
-                        <option value="Paket">Paket</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Tas">Tas</option><option value="Dompet">Dompet</option><option value="Paket">Paket</option><option value="Lainnya">Lainnya</option>
                     </select>
                     <input type="text" id="inpNama" placeholder="Nama Produk" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="inpHpp" placeholder="HPP Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
+                        <input type="number" id="inpHpp" placeholder="HPP/Unit" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                         <input type="number" id="inpJual" placeholder="Harga Jual" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="inpTerjual" placeholder="Qty Terjual" class="w-full p-3 border-blue-200 border rounded-xl text-sm font-bold text-blue-700">
+                        <input type="number" id="inpTerjual" placeholder="Qty" class="w-full p-3 border-blue-200 border rounded-xl text-sm font-bold text-blue-700">
                         <input type="number" id="inpOps" placeholder="Biaya Admin" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
                     </div>
                     <button onclick="tambahDataPenjualan()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-xl hover:brightness-110 uppercase text-xs">Simpan Transaksi</button>
@@ -105,18 +97,12 @@
             <div class="lg:col-span-2 bg-white rounded-2xl card-shadow overflow-hidden border border-gray-100">
                 <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
                     <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest">Laporan Keuangan</h2>
-                    <div id="statOmzet" class="text-sm font-bold text-navy-bg">Omzet: Rp 0</div>
+                    <div id="statOmzet" class="text-sm font-bold text-navy-bg">Rp 0</div>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="overflow-y-auto max-h-[450px]">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-[10px] text-gray-400 uppercase">
-                            <tr>
-                                <th class="p-4">Produk</th>
-                                <th class="p-4">Omzet</th>
-                                <th class="p-4">Margin %</th>
-                                <th class="p-4 text-right">Profit Net</th>
-                                <th class="p-4"></th>
-                            </tr>
+                        <thead class="bg-gray-50 text-[10px] text-gray-400 uppercase sticky top-0">
+                            <tr><th class="p-4">Produk</th><th class="p-4">Omzet</th><th class="p-4">Margin</th><th class="p-4 text-right">Profit Net</th><th class="p-4"></th></tr>
                         </thead>
                         <tbody id="tabelBody"></tbody>
                     </table>
@@ -129,14 +115,11 @@
         <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
             <h3 class="font-bold text-navy-bg uppercase text-center border-b pb-2">Input Stok Gudang</h3>
             <select id="stokKategori" class="w-full p-3 bg-gray-50 border rounded-xl">
-                <option value="Tas">Tas</option>
-                <option value="Dompet">Dompet</option>
-                <option value="Paket">Paket</option>
-                <option value="Lainnya">Lainnya</option>
+                <option value="Tas">Tas</option><option value="Dompet">Dompet</option><option value="Paket">Paket</option><option value="Lainnya">Lainnya</option>
             </select>
             <input type="number" id="stokTambah" placeholder="Jumlah Tambah" class="w-full p-3 border rounded-xl">
             <div class="flex gap-2">
-                <button onclick="document.getElementById('modalStok').classList.add('hidden')" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold text-xs uppercase">Batal</button>
+                <button onclick="document.getElementById('modalStok').classList.add('hidden')" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold text-xs uppercase text-gray-600">Batal</button>
                 <button onclick="updateStokGudang()" class="flex-1 py-3 bg-navy-bg text-white rounded-xl font-bold text-xs uppercase">Simpan</button>
             </div>
         </div>
@@ -145,6 +128,8 @@
     <script>
         let masterStock = JSON.parse(localStorage.getItem('goldenMasterStock')) || { "Tas": 0, "Dompet": 0, "Paket": 0, "Lainnya": 0 };
         let salesDB = JSON.parse(localStorage.getItem('goldenSalesDB_v4')) || [];
+        let myLineChart = null;
+
         document.getElementById('inpTgl').valueAsDate = new Date();
 
         function formatRp(n) { return "Rp " + new Intl.NumberFormat("id-ID").format(n); }
@@ -163,7 +148,7 @@
         function tambahDataPenjualan() {
             const kat = document.getElementById('inpKategori').value;
             const terjual = parseInt(document.getElementById('inpTerjual').value) || 0;
-            if (masterStock[kat] < terjual) return alert(`Stok ${kat} kurang!`);
+            if (masterStock[kat] < terjual) return alert(`Stok ${kat} kurang! Sisa: ${masterStock[kat]}`);
 
             const data = {
                 id: Date.now(),
@@ -185,8 +170,33 @@
             ['inpNama','inpHpp','inpJual','inpTerjual','inpOps'].forEach(i => document.getElementById(i).value="");
         }
 
+        function renderLineChart(filteredData) {
+            const ctx = document.getElementById('lineChartAnalytics').getContext('2d');
+            const grouped = filteredData.reduce((acc, curr) => {
+                if (!acc[curr.tgl]) acc[curr.tgl] = { omzet: 0, profit: 0 };
+                const omzet = curr.jual * curr.terjual;
+                const profit = omzet - (curr.hpp * curr.terjual) - (curr.ops * curr.terjual);
+                acc[curr.tgl].omzet += omzet;
+                acc[curr.tgl].profit += profit;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(grouped).sort();
+            if (myLineChart) myLineChart.destroy();
+            myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'Omzet', data: labels.map(l => grouped[l].omzet), borderColor: '#D4AF37', backgroundColor: 'rgba(212, 175, 55, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'Profit', data: labels.map(l => grouped[l].profit), borderColor: '#10b981', borderDash: [5, 5], tension: 0.4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { font: { size: 8 } } }, x: { ticks: { font: { size: 8 } } } } }
+            });
+        }
+
         function renderApp() {
-            // Inventory Cards
             const invCont = document.getElementById('inventoryDisplay');
             invCont.innerHTML = "";
             for (const [kat, jml] of Object.entries(masterStock)) {
@@ -194,11 +204,9 @@
                     <div class="bg-white p-5 rounded-2xl card-shadow border border-gray-100 text-center">
                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">${kat}</p>
                         <h3 class="text-2xl font-black ${jml < 5 ? 'text-red-500' : 'text-navy-bg'}">${jml}</h3>
-                        <div class="text-[8px] bg-gray-100 py-1 rounded-full mt-2 uppercase">Gudang</div>
                     </div>`;
             }
 
-            // Filter & Table
             const periode = document.getElementById('periodeAnalisis').value;
             const now = new Date();
             const filtered = salesDB.filter(item => {
@@ -211,42 +219,33 @@
 
             const body = document.getElementById('tabelBody');
             body.innerHTML = "";
-            
-            let totalOmzet = 0, totalHpp = 0, totalOps = 0, totalProfit = 0;
+            let tO = 0, tH = 0, tOp = 0, tP = 0;
 
             filtered.sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).forEach(item => {
-                const omzet = item.jual * item.terjual;
-                const hpp = item.hpp * item.terjual;
-                const ops = item.ops * item.terjual;
-                const profit = omzet - hpp - ops;
-                const marginPercent = (profit / omzet) * 100 || 0;
-
-                totalOmzet += omzet; totalHpp += hpp; totalOps += ops; totalProfit += profit;
-
+                const o = item.jual * item.terjual;
+                const h = item.hpp * item.terjual;
+                const op = item.ops * item.terjual;
+                const p = o - h - op;
+                tO += o; tH += h; tOp += op; tP += p;
                 body.innerHTML += `
-                    <tr class="border-b hover:bg-slate-50 transition">
-                        <td class="p-4"><div class="font-bold text-navy-bg">${item.nama}</div><div class="text-[9px] text-gray-400">${item.tgl} | ${item.kategori}</div></td>
-                        <td class="p-4 font-semibold">${formatRp(omzet)}</td>
-                        <td class="p-4"><span class="px-2 py-1 rounded bg-indigo-50 text-indigo-700 font-bold text-[10px]">${marginPercent.toFixed(1)}%</span></td>
-                        <td class="p-4 text-right font-bold text-emerald-600">${formatRp(profit)}</td>
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="p-4"><div class="font-bold text-navy-bg">${item.nama}</div><div class="text-[8px] text-gray-400">${item.tgl} | ${item.kategori}</div></td>
+                        <td class="p-4 font-semibold">${formatRp(o)}</td>
+                        <td class="p-4 text-[10px] font-bold text-indigo-600">${((p/o)*100 || 0).toFixed(1)}%</td>
+                        <td class="p-4 text-right font-bold text-emerald-600">${formatRp(p)}</td>
                         <td class="p-4 text-center"><button onclick="hapus(${item.id})" class="text-red-300">✕</button></td>
                     </tr>`;
             });
 
-            // Update Analytics
-            document.getElementById('statOmzet').innerText = "Total Omzet: " + formatRp(totalOmzet);
-            
-            const hppRate = (totalHpp / totalOmzet) * 100 || 0;
-            const opsRate = (totalOps / totalOmzet) * 100 || 0;
-            const profitRate = (totalProfit / totalOmzet) * 100 || 0;
-
-            document.getElementById('hppRateTxt').innerText = hppRate.toFixed(1) + "%";
-            document.getElementById('opsRateTxt').innerText = opsRate.toFixed(1) + "%";
-            document.getElementById('profitRateTxt').innerText = profitRate.toFixed(1) + "%";
-            
-            document.getElementById('hppBar').style.width = hppRate + "%";
-            document.getElementById('opsBar').style.width = opsRate + "%";
-            document.getElementById('profitBar').style.width = profitRate + "%";
+            document.getElementById('statOmzet').innerText = "Total Omzet: " + formatRp(tO);
+            const rH = (tH/tO)*100 || 0, rOp = (tOp/tO)*100 || 0, rP = (tP/tO)*100 || 0;
+            document.getElementById('hppRateTxt').innerText = rH.toFixed(1) + "%";
+            document.getElementById('opsRateTxt').innerText = rOp.toFixed(1) + "%";
+            document.getElementById('profitRateTxt').innerText = rP.toFixed(1) + "%";
+            document.getElementById('hppBar').style.width = rH + "%";
+            document.getElementById('opsBar').style.width = rOp + "%";
+            document.getElementById('profitBar').style.width = rP + "%";
+            renderLineChart(filtered);
         }
 
         function hapus(id) {
@@ -261,29 +260,13 @@
         }
 
         async function exportPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            doc.setFillColor(0, 31, 63);
-            doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(212, 175, 55);
-            doc.setFontSize(20);
-            doc.text("LAPORAN KEUANGAN & MARGIN", 15, 25);
-            
-            const tableData = salesDB.map(i => [
-                i.tgl, i.nama, i.kategori, i.terjual, formatRp(i.jual * i.terjual), 
-                (( ( (i.jual-i.hpp)-i.ops ) / (i.jual*i.terjual) ) * 100 || 0).toFixed(1) + "%", 
-                formatRp(((i.jual - i.hpp) - i.ops) * i.terjual)
-            ]);
-
-            doc.autoTable({
-                head: [['Tgl', 'Produk', 'Kat', 'Qty', 'Omzet', 'Margin%', 'Profit']],
-                body: tableData,
-                startY: 50,
-                headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] }
-            });
-            doc.save(`GoldenSales_Analytics_${new Date().toISOString().slice(0,10)}.pdf`);
+            const { jsPDF } = window.jspdf; const doc = new jsPDF();
+            doc.setFillColor(0, 31, 63); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(212, 175, 55); doc.setFontSize(20); doc.text("GOLDENSALES ANALYTICS REPORT", 15, 25);
+            const tableData = salesDB.map(i => [i.tgl, i.nama, i.kategori, i.terjual, formatRp(i.jual * i.terjual), formatRp((i.jual-i.hpp-i.ops)*i.terjual)]);
+            doc.autoTable({ head: [['Tgl', 'Produk', 'Kategori', 'Qty', 'Omzet', 'Profit']], body: tableData, startY: 50, headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] } });
+            doc.save(`GoldenSales_Final_${new Date().toISOString().slice(0,10)}.pdf`);
         }
-
         window.onload = renderApp;
     </script>
 </body>
