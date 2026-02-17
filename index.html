@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldenSales v5.5 - Professional Analytics</title>
+    <title>DS Sales v1.0 - Professional Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,7 +23,7 @@
 
     <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50 shadow-xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">Analytics v5.5</span></h1>
+            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Dafaan Store<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">Analytics v5.5</span></h1>
             <div class="flex items-center gap-3">
                 <select id="periodeAnalisis" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white text-xs border border-blue-700 outline-none">
                     <option value="hari">Hari Ini</option>
@@ -130,7 +130,7 @@
             <input type="number" id="stokTambah" placeholder="Jumlah Tambah" class="w-full p-3 border rounded-xl">
             <div class="flex gap-2">
                 <button onclick="document.getElementById('modalStok').classList.add('hidden')" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold text-xs uppercase text-gray-600">Batal</button>
-                <button onclick="updateStokGudang()" class="flex-1 py-3 bg-navy-bg text-white rounded-xl font-bold text-xs uppercase">Simpan</button>
+                <button onclick="updateStokGudang()" class="flex-1 py-3 bg-gray-200 rounded-xl font-bold text-xs uppercase text-gray-600">Simpan</button>
             </div>
         </div>
     </div>
