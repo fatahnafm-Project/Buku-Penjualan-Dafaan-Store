@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldenSales - Pro Inventory & Profit Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .gold-gradient { background: linear-gradient(135deg, #D4AF37 0%, #F9E27D 50%, #B8860B 100%); }
+        .navy-bg { background-color: #001F3F; }
+        .gold-text { color: #D4AF37; }
+        .gold-border { border-color: #D4AF37; }
+        .header-font { font-family: 'Playfair Display', serif; }
+        .card-shadow { box-shadow: 0 4px 20px rgba(0, 31, 63, 0.08); }
+        @media print { .no-print { display: none; } }
+    </style>
+</head>
+<body>
+
+    <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="header-font text-2xl text-white tracking-widest">GOLDEN<span class="gold-text">SALES</span></h1>
+            <div class="flex items-center gap-4 no-print">
+                <input type="date" id="filterTanggal" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white border border-blue-700 text-sm">
+                <button onclick="exportData()" class="gold-gradient text-navy-bg px-4 py-2 rounded font-bold text-xs uppercase tracking-tighter">Export CSV</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8 space-y-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 gold-border">
+                <p class="text-xs font-bold text-gray-400 uppercase">Penjualan Hari Ini</p>
+                <h3 id="statPenjualan" class="text-2xl font-black text-navy-bg">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-emerald-500">
+                <p class="text-xs font-bold text-gray-400 uppercase">Laba Kotor (Gross)</p>
+                <h3 id="statLabaKotor" class="text-2xl font-black text-emerald-600">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-blue-500">
+                <p class="text-xs font-bold text-gray-400 uppercase">Laba Bersih (Net)</p>
+                <h3 id="statLabaBersih" class="text-2xl font-black text-blue-700">Rp 0</h3>
+            </div>
+            <div class="bg-white p-6 rounded-xl card-shadow border-l-4 border-amber-500">
+                <p class="text-xs font-bold text-gray-400 uppercase">Stok Terjual</p>
+                <h3 id="statStokTerjual" class="text-2xl font-black text-amber-700">0 Unit</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 h-fit">
+                <div class="navy-bg p-4"><h2 class="text-white font-bold text-sm uppercase tracking-widest">Input Penjualan Baru</h2></div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Nama Barang</label>
+                        <input type="text" id="inpNama" placeholder="Contoh: Kemeja Flanel" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Harga Modal (HPP)</label>
+                            <input type="number" id="inpHpp" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Harga Jual</label>
+                            <input type="number" id="inpJual" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Stok Awal</label>
+                            <input type="number" id="inpStok" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Jumlah Terjual</label>
+                            <input type="number" id="inpTerjual" class="w-full p-3 bg-blue-50 border-blue-200 border rounded-lg outline-none font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1 uppercase">Biaya Operasional Lain (Unit)</label>
+                        <input type="number" id="inpOps" value="0" class="w-full p-3 bg-gray-50 border rounded-lg outline-none">
+                    </div>
+                    <button onclick="tambahTransaksi()" class="w-full py-4 gold-gradient text-navy-bg font-black rounded-xl shadow-lg hover:scale-[1.02] transition uppercase tracking-widest text-sm">Simpan Transaksi</button>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="bg-gray-50 p-4 border-b flex justify-between items-center">
+                    <h2 class="text-navy-bg font-bold text-sm uppercase tracking-widest">Laporan Rekapitulasi</h2>
+                    <span id="labelTanggal" class="text-xs font-bold text-gray-400"></span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-[10px] text-gray-400 uppercase">
+                            <tr>
+                                <th class="p-4">Produk</th>
+                                <th class="p-4">Stok (Sisa/Awal)</th>
+                                <th class="p-4">Omzet</th>
+                                <th class="p-4">Laba Bersih</th>
+                                <th class="p-4 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBody" class="text-sm">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Database sederhana menggunakan LocalStorage
+        let database = JSON.parse(localStorage.getItem('goldenSalesDB')) || [];
+
+        // Inisialisasi Tanggal Hari Ini
+        document.getElementById('filterTanggal').valueAsDate = new Date();
+
+        function formatRupiah(angka) {
+            return "Rp " + new Intl.NumberFormat("id-ID").format(angka);
+        }
+
+        function tambahTransaksi() {
+            const transaksi = {
+                id: Date.now(),
+                tanggal: document.getElementById('filterTanggal').value,
+                nama: document.getElementById('inpNama').value,
+                hpp: parseFloat(document.getElementById('inpHpp').value) || 0,
+                jual: parseFloat(document.getElementById('inpJual').value) || 0,
+                stokAwal: parseInt(document.getElementById('inpStok').value) || 0,
+                terjual: parseInt(document.getElementById('inpTerjual').value) || 0,
+                ops: parseFloat(document.getElementById('inpOps').value) || 0
+            };
+
+            if(transaksi.nama === "") return alert("Nama barang harus diisi!");
+
+            database.push(transaksi);
+            localStorage.setItem('goldenSalesDB', JSON.stringify(database));
+            renderApp();
+            clearForm();
+        }
+
+        function clearForm() {
+            ['inpNama', 'inpHpp', 'inpJual', 'inpStok', 'inpTerjual', 'inpOps'].forEach(id => document.getElementById(id).value = "");
+        }
+
+        function hapusData(id) {
+            database = database.filter(item => item.id !== id);
+            localStorage.setItem('goldenSalesDB', JSON.stringify(database));
+            renderApp();
+        }
+
+        function renderApp() {
+            const tglFilter = document.getElementById('filterTanggal').value;
+            document.getElementById('labelTanggal').innerText = "Data Tanggal: " + tglFilter;
+            
+            const filteredData = database.filter(item => item.tanggal === tglFilter);
+            const body = document.getElementById('tabelBody');
+            body.innerHTML = "";
+
+            let totalOmzet = 0;
+            let totalKotor = 0;
+            let totalBersih = 0;
+            let totalStokTerjual = 0;
+
+            filteredData.forEach(item => {
+                const sisaStok = item.stokAwal - item.terjual;
+                const omzet = item.jual * item.terjual;
+                const labaKotor = (item.jual - item.hpp) * item.terjual;
+                const labaBersih = labaKotor - (item.ops * item.terjual);
+
+                totalOmzet += omzet;
+                totalKotor += labaKotor;
+                totalBersih += labaBersih;
+                totalStokTerjual += item.terjual;
+
+                body.innerHTML += `
+                    <tr class="border-b hover:bg-gray-50">
+                        <td class="p-4 font-bold text-navy-bg">${item.nama}</td>
+                        <td class="p-4 text-xs">
+                            <span class="text-blue-600 font-bold">${sisaStok}</span> / ${item.stokAwal}
+                        </td>
+                        <td class="p-4 text-gray-600">${formatRupiah(omzet)}</td>
+                        <td class="p-4 font-bold text-emerald-600">${formatRupiah(labaBersih)}</td>
+                        <td class="p-4 text-center">
+                            <button onclick="hapusData(${item.id})" class="text-red-400 hover:text-red-600">✕</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            // Update Stats
+            document.getElementById('statPenjualan').innerText = formatRupiah(totalOmzet);
+            document.getElementById('statLabaKotor').innerText = formatRupiah(totalKotor);
+            document.getElementById('statLabaBersih').innerText = formatRupiah(totalBersih);
+            document.getElementById('statStokTerjual').innerText = totalStokTerjual + " Unit";
+        }
+
+        function exportData() {
+            let csv = "Tanggal,Nama Produk,HPP,Harga Jual,Stok Awal,Terjual,Sisa Stok,Omzet,Laba Bersih\n";
+            database.forEach(item => {
+                const sisa = item.stokAwal - item.terjual;
+                const omzet = item.jual * item.terjual;
+                const bersih = ((item.jual - item.hpp) - item.ops) * item.terjual;
+                csv += `${item.tanggal},${item.nama},${item.hpp},${item.jual},${item.stokAwal},${item.terjual},${sisa},${omzet},${bersih}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', `Laporan_GoldenSales_${new Date().toISOString().slice(0,7)}.csv`);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        window.onload = renderApp;
+    </script>
+</body>
+</html>
