@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoldenSales v5.0 - Ultimate Analytics</title>
+    <title>GoldenSales v5.5 - Professional Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -23,10 +23,10 @@
 
     <nav class="navy-bg p-5 border-b-4 gold-border sticky top-0 z-50 shadow-xl">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">v5.0 Pro</span></h1>
+            <h1 class="header-font text-2xl text-white tracking-widest uppercase">Golden<span class="gold-text">Sales</span> <span class="text-[10px] opacity-60">Analytics v5.5</span></h1>
             <div class="flex items-center gap-3">
                 <select id="periodeAnalisis" onchange="renderApp()" class="p-2 rounded bg-blue-900 text-white text-xs border border-blue-700 outline-none">
-                    <option value="hari">Data Hari Ini</option>
+                    <option value="hari">Hari Ini</option>
                     <option value="minggu">7 Hari Terakhir</option>
                     <option value="bulan">30 Hari Terakhir</option>
                 </select>
@@ -41,18 +41,18 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="bg-white rounded-2xl card-shadow p-6 border border-gray-100 flex flex-col justify-between">
-                <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest mb-6 border-b pb-2">Margin & Efficiency</h2>
+                <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest mb-6 border-b pb-2 text-center">Business Health Rates</h2>
                 <div class="space-y-6">
                     <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">HPP Rate</span><span id="hppRateTxt" class="text-amber-600">0%</span></div>
+                        <div class="flex justify-between text-[10px] font-bold uppercase text-gray-400"><span>HPP Rate</span><span id="hppRateTxt" class="text-amber-600">0%</span></div>
                         <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="hppBar" class="progress-bar bg-amber-500 h-full" style="width: 0%"></div></div>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">Ops Rate</span><span id="opsRateTxt" class="text-indigo-600">0%</span></div>
+                        <div class="flex justify-between text-[10px] font-bold uppercase text-gray-400"><span>Ops Rate</span><span id="opsRateTxt" class="text-indigo-600">0%</span></div>
                         <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="opsBar" class="progress-bar bg-indigo-500 h-full" style="width: 0%"></div></div>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between text-[10px] font-bold uppercase"><span class="text-gray-400">Net Profit Margin</span><span id="profitRateTxt" class="text-emerald-600">0%</span></div>
+                        <div class="flex justify-between text-[10px] font-bold uppercase text-gray-400"><span>Net Margin</span><span id="profitRateTxt" class="text-emerald-600">0%</span></div>
                         <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div id="profitBar" class="progress-bar bg-emerald-500 h-full" style="width: 0%"></div></div>
                     </div>
                 </div>
@@ -60,9 +60,10 @@
 
             <div class="lg:col-span-2 bg-white rounded-2xl card-shadow p-6 border border-gray-100">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest">Financial Performance Trend</h2>
+                    <h2 class="text-navy-bg text-[10px] font-black uppercase tracking-widest">Revenue vs Ops vs Profit Trend</h2>
                     <div class="flex gap-3 text-[8px] font-bold uppercase">
                         <span class="flex items-center"><span class="w-2 h-2 bg-amber-500 rounded-full mr-1"></span> Omzet</span>
+                        <span class="flex items-center"><span class="w-2 h-2 bg-indigo-500 rounded-full mr-1"></span> Ops</span>
                         <span class="flex items-center"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-1"></span> Profit</span>
                     </div>
                 </div>
@@ -73,12 +74,12 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="bg-white rounded-2xl card-shadow overflow-hidden h-fit border border-gray-100">
                 <div class="navy-bg p-4 flex justify-between items-center">
-                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Transaksi</h2>
+                    <h2 class="text-white text-xs font-bold uppercase tracking-widest">Input Penjualan</h2>
                     <button onclick="document.getElementById('modalStok').classList.toggle('hidden')" class="text-[10px] gold-text font-bold underline">ISI GUDANG</button>
                 </div>
                 <div class="p-6 space-y-4">
                     <input type="date" id="inpTgl" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
-                    <select id="inpKategori" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm font-bold">
+                    <select id="inpKategori" class="w-full p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm font-bold outline-none">
                         <option value="Tas">Tas</option><option value="Dompet">Dompet</option><option value="Paket">Paket</option><option value="Lainnya">Lainnya</option>
                     </select>
                     <input type="text" id="inpNama" placeholder="Nama Produk" class="w-full p-3 bg-gray-50 border rounded-xl text-sm outline-none">
@@ -94,18 +95,27 @@
                 </div>
             </div>
 
-            <div class="lg:col-span-2 bg-white rounded-2xl card-shadow overflow-hidden border border-gray-100">
-                <div class="p-4 bg-gray-50 border-b flex justify-between items-center">
-                    <h2 class="text-navy-bg text-xs font-black uppercase tracking-widest">Laporan Keuangan</h2>
-                    <div id="statOmzet" class="text-sm font-bold text-navy-bg">Rp 0</div>
+            <div class="lg:col-span-2 space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-xl card-shadow border-l-4 border-amber-500">
+                        <p class="text-[9px] font-bold text-gray-400 uppercase">Total Omzet</p>
+                        <h4 id="statOmzet" class="text-lg font-black text-navy-bg">Rp 0</h4>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl card-shadow border-l-4 border-emerald-500">
+                        <p class="text-[9px] font-bold text-gray-400 uppercase">Total Net Profit</p>
+                        <h4 id="statProfitNet" class="text-lg font-black text-emerald-600">Rp 0</h4>
+                    </div>
                 </div>
-                <div class="overflow-y-auto max-h-[450px]">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-gray-50 text-[10px] text-gray-400 uppercase sticky top-0">
-                            <tr><th class="p-4">Produk</th><th class="p-4">Omzet</th><th class="p-4">Margin</th><th class="p-4 text-right">Profit Net</th><th class="p-4"></th></tr>
-                        </thead>
-                        <tbody id="tabelBody"></tbody>
-                    </table>
+
+                <div class="bg-white rounded-2xl card-shadow overflow-hidden border border-gray-100">
+                    <div class="overflow-y-auto max-h-[400px]">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-gray-50 text-[10px] text-gray-400 uppercase sticky top-0 z-10">
+                                <tr><th class="p-4">Produk</th><th class="p-4">Omzet</th><th class="p-4">Ops</th><th class="p-4 text-right">Profit Net</th><th class="p-4"></th></tr>
+                            </thead>
+                            <tbody id="tabelBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -113,7 +123,7 @@
 
     <div id="modalStok" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100] p-4">
         <div class="bg-white rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-2xl">
-            <h3 class="font-bold text-navy-bg uppercase text-center border-b pb-2">Input Stok Gudang</h3>
+            <h3 class="font-bold text-navy-bg uppercase text-center border-b pb-2">Update Stok Gudang</h3>
             <select id="stokKategori" class="w-full p-3 bg-gray-50 border rounded-xl">
                 <option value="Tas">Tas</option><option value="Dompet">Dompet</option><option value="Paket">Paket</option><option value="Lainnya">Lainnya</option>
             </select>
@@ -173,11 +183,13 @@
         function renderLineChart(filteredData) {
             const ctx = document.getElementById('lineChartAnalytics').getContext('2d');
             const grouped = filteredData.reduce((acc, curr) => {
-                if (!acc[curr.tgl]) acc[curr.tgl] = { omzet: 0, profit: 0 };
-                const omzet = curr.jual * curr.terjual;
-                const profit = omzet - (curr.hpp * curr.terjual) - (curr.ops * curr.terjual);
-                acc[curr.tgl].omzet += omzet;
-                acc[curr.tgl].profit += profit;
+                if (!acc[curr.tgl]) acc[curr.tgl] = { omzet: 0, profit: 0, ops: 0 };
+                const o = curr.jual * curr.terjual;
+                const op = curr.ops * curr.terjual;
+                const p = o - (curr.hpp * curr.terjual) - op;
+                acc[curr.tgl].omzet += o;
+                acc[curr.tgl].ops += op;
+                acc[curr.tgl].profit += p;
                 return acc;
             }, {});
 
@@ -189,6 +201,7 @@
                     labels: labels,
                     datasets: [
                         { label: 'Omzet', data: labels.map(l => grouped[l].omzet), borderColor: '#D4AF37', backgroundColor: 'rgba(212, 175, 55, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'Ops', data: labels.map(l => grouped[l].ops), borderColor: '#6366f1', tension: 0.4 },
                         { label: 'Profit', data: labels.map(l => grouped[l].profit), borderColor: '#10b981', borderDash: [5, 5], tension: 0.4 }
                     ]
                 },
@@ -231,13 +244,15 @@
                     <tr class="border-b hover:bg-slate-50">
                         <td class="p-4"><div class="font-bold text-navy-bg">${item.nama}</div><div class="text-[8px] text-gray-400">${item.tgl} | ${item.kategori}</div></td>
                         <td class="p-4 font-semibold">${formatRp(o)}</td>
-                        <td class="p-4 text-[10px] font-bold text-indigo-600">${((p/o)*100 || 0).toFixed(1)}%</td>
+                        <td class="p-4 text-indigo-600 font-bold">${formatRp(op)}</td>
                         <td class="p-4 text-right font-bold text-emerald-600">${formatRp(p)}</td>
                         <td class="p-4 text-center"><button onclick="hapus(${item.id})" class="text-red-300">✕</button></td>
                     </tr>`;
             });
 
-            document.getElementById('statOmzet').innerText = "Total Omzet: " + formatRp(tO);
+            document.getElementById('statOmzet').innerText = formatRp(tO);
+            document.getElementById('statProfitNet').innerText = formatRp(tP);
+            
             const rH = (tH/tO)*100 || 0, rOp = (tOp/tO)*100 || 0, rP = (tP/tO)*100 || 0;
             document.getElementById('hppRateTxt').innerText = rH.toFixed(1) + "%";
             document.getElementById('opsRateTxt').innerText = rOp.toFixed(1) + "%";
@@ -262,10 +277,10 @@
         async function exportPDF() {
             const { jsPDF } = window.jspdf; const doc = new jsPDF();
             doc.setFillColor(0, 31, 63); doc.rect(0, 0, 210, 40, 'F');
-            doc.setTextColor(212, 175, 55); doc.setFontSize(20); doc.text("GOLDENSALES ANALYTICS REPORT", 15, 25);
+            doc.setTextColor(212, 175, 55); doc.setFontSize(20); doc.text("GOLDENSALES ANALYTICS v5.5", 15, 25);
             const tableData = salesDB.map(i => [i.tgl, i.nama, i.kategori, i.terjual, formatRp(i.jual * i.terjual), formatRp((i.jual-i.hpp-i.ops)*i.terjual)]);
             doc.autoTable({ head: [['Tgl', 'Produk', 'Kategori', 'Qty', 'Omzet', 'Profit']], body: tableData, startY: 50, headStyles: { fillColor: [0, 31, 63], textColor: [212, 175, 55] } });
-            doc.save(`GoldenSales_Final_${new Date().toISOString().slice(0,10)}.pdf`);
+            doc.save(`GoldenSales_Report.pdf`);
         }
         window.onload = renderApp;
     </script>
